@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="AccessApi.Client.Core" Version="2.2.0" />
+		<PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
+		<PackageReference Include="ChiTech.NET.OpenTelemetry" Version="1.0.3" />
+		<PackageReference Include="ChiTech.NET.OpenTelemetry.Instrumentation.AspNetCore" Version="1.0.3" />
+		<PackageReference Include="ChiTech.NET.OpenTelemetry.Instrumentation.HttpClient" Version="1.0.2" />
+		<PackageReference Include="ChiTech.NET.OpenTelemetry.Instrumentation.SqlClient" Version="1.0.2" />
+		<PackageReference Include="ChiTech.NET.OpenTelemetry.Instrumentation.PostgreSQL" Version="1.0.2" />
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
+		<PackageReference Include="Quartz.Extensions.Hosting" Version="3.15.0" />
+		<PackageReference Include="Quartz.Jobs" Version="3.15.0" />
+		<PackageReference Include="Quartz.Serialization.SystemTextJson" Version="3.15.0" />
+	</ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TicketsGeneratorServices.Common\TicketsGeneratorServices.Common.csproj" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<Using Include="TicketsGeneratorServices.Common.Extensions" />
+		<Using Include="TicketsGeneratorServices.Common.Models.Base" />
+	</ItemGroup>
+
+</Project>

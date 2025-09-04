@@ -1,0 +1,62 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<OpenApiReference Include="Services\PartnersService\Repository\partnersApi.json" CodeGenerator="NSwagCSharp" Namespace="TicketsGeneratorServices.Common.Services.PartnersService.Repository" ClassName="PartnersApiClient">
+			<SourceUri>https://k8s.bookcentre.ru/partners/swagger/v3/swagger.json</SourceUri>
+			<Options>/UseBaseUrl:false /GenerateBaseUrlProperty:false /GenerateOptionalParameters:true /GenerateNullableReferenceTypes:true /ExceptionClass:"TicketsGeneratorServices.Common.Models.OpenAPI.ApiException" /GenerateExceptionClasses:false /OperationGenerationMode:"SingleClientFromPathSegments" /DateType:"System.DateOnly" /TimeType:"System.TimeOnly"</Options>
+			<OutputPath>PartnersApiClient.cs</OutputPath>
+		</OpenApiReference>
+	</ItemGroup>
+
+	
+  <ItemGroup>
+    <PackageReference Include="App.Metrics.AspNetCore.Mvc" Version="4.3.0" />
+    <PackageReference Include="App.Metrics.Extensions.Collectors" Version="4.3.0" />
+    <PackageReference Include="App.Metrics.Prometheus" Version="4.3.0" />
+    <PackageReference Include="MediatR" Version="13.0.0" />
+    <PackageReference Include="AutoMapper" Version="15.0.1" />
+    <PackageReference Include="AutoMapper.Extensions.EnumMapping" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.ApiDescription.Client" Version="9.0.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="9.0.8" />
+    <PackageReference Include="AutoMapper.Extensions.ExpressionMapping" Version="9.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="NSwag.ApiDescription.Client" Version="14.5.0">
+	    <PrivateAssets>all</PrivateAssets>
+	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
+    <PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
+    <PackageReference Include="Serilog.Exceptions" Version="8.4.0" />
+    <PackageReference Include="Serilog.Formatting.Compact" Version="3.0.0" />
+    <PackageReference Include="Serilog.Sinks.Async" Version="2.1.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.4" />
+    <PackageReference Include="System.Text.Encodings.Web" Version="9.0.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TicketsGeneratorServices.Db\TicketsGeneratorServices.Db.csproj" />
+  </ItemGroup>
+
+<ItemGroup>
+	<Using Include="TicketsGeneratorServices.Common.Extensions" />
+	<Using Include="TicketsGeneratorServices.Common.Models.Base" />
+	<Using Include="Microsoft.Extensions.Logging" />
+</ItemGroup>
+
+<ItemGroup>
+  <Folder Include="Models\Enums\" />
+</ItemGroup>
+
+</Project>

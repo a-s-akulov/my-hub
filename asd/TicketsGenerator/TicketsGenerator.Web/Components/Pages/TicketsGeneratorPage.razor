@@ -1,0 +1,44 @@
+﻿@page "/tickets-generator"
+@rendermode InteractiveServer
+
+@inject IJSRuntime JS
+@inject TicketsGeneratorApiClient TicketsGeneratorApi
+
+<PageTitle>Генератор билетов</PageTitle>
+
+<h1>Генератор билетов</h1>
+
+<p role="status">Количество человек: <input type="number" name="personsCount" min="1" max="100" value="@personsCount" /></p>
+<button class="btn btn-primary" @onclick="DownloadTickets">Скачать билеты</button>
+
+@code {
+    private int personsCount = 1;
+
+
+    private async Task DownloadTickets()
+    {
+        var fileResponse = await TicketsGeneratorApi.GetTickets(personsCount);
+        var fileStream = fileResponse.ReadAsStream();
+        var fileContentType = fileResponse.Headers.ContentType.ToString();
+        var fileName = fileResponse.Headers.ContentDisposition.FileNameStar;
+
+        using var streamRef = new DotNetStreamReference(stream: fileStream);
+        await JS.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
+    }
+}
+
+
+
+<script>
+  window.downloadFileFromStream = async (fileName, contentStreamReference) => {
+    const arrayBuffer = await contentStreamReference.arrayBuffer();
+    const blob = new Blob([arrayBuffer]);
+    const url = URL.createObjectURL(blob);
+    const anchorElement = document.createElement('a');
+    anchorElement.href = url;
+    anchorElement.download = fileName ?? '';
+    anchorElement.click();
+    anchorElement.remove();
+    URL.revokeObjectURL(url);
+  }
+</script>
