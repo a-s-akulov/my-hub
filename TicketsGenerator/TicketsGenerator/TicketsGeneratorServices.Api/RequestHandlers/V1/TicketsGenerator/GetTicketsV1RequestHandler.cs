@@ -5,6 +5,11 @@ using TicketsGeneratorServices.Api.Properties;
 using TicketsGeneratorServices.Api.RequestHandlers.Base;
 using TicketsGeneratorServices.Common.Services.TicketsGeneratorStorageService;
 
+using PdfSharp.Drawing;
+using PdfSharp.Fonts;
+using PdfSharp.Pdf;
+using PdfSharp.Quality;
+
 
 namespace TicketsGeneratorServices.Api.RequestHandlers.V1.MyAwesomeProducts;
 
@@ -33,6 +38,13 @@ public class GetTicketsV1RequestHandler : RequestHandlerBase<ITicketsGeneratorSt
             ContentType = System.Net.Mime.MediaTypeNames.Application.Pdf,
             DownloadFileName = "Билет на посещение территории.pdf"
         };
+    }
+
+    private Stream GenerateDocument(int personsCount)
+    {
+        var document = new PdfDocument();
+
+        return Stream.Null;
     }
 
     #endregion Методы
