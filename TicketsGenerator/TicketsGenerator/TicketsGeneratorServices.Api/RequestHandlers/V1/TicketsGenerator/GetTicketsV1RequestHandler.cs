@@ -40,7 +40,7 @@ public class GetTicketsV1RequestHandler : RequestHandlerBase<ITicketsGeneratorSt
         };
     }
 
-    private Stream GenerateDocument(int personsCount)
+    private Stream GenerateDocument(int personsCount, DateTimeOffset visitDate)
     {
         var document = new PdfDocument();
 
