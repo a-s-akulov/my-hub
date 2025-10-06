@@ -8,7 +8,7 @@
 
 <h1>Генератор билетов</h1>
 
-<p role="status">Количество человек: <input type="number" name="personsCount" min="1" max="100" value="@personsCount" /></p>
+<p role="status">Количество человек: <input type="number" name="personsCount" min="1" max="100" step="1" @bind-value="personsCount" @bind-value:event="oninput" /></p>
 <button class="btn btn-primary" @onclick="DownloadTickets">Скачать билеты</button>
 
 @code {

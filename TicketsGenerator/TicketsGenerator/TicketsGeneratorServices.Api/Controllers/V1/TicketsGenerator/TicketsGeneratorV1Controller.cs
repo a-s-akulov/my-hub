@@ -25,11 +25,12 @@ public partial class TicketsGeneratorV1Controller : ControllerInAppBase
 
     [HttpGet]
     [Route("")]
-    public async Task<FileStreamResult> GetTickets([FromQuery] GetTicketsRequest request, CancellationToken cancellationToken = default)
+    public async Task<ActionResult> GetTickets([FromQuery] GetTicketsRequest request, CancellationToken cancellationToken = default)
     {
         var mediatrRequest = new HandlerRequest<GetTicketsRequest, ApiResponse<GetTicketsResponse>>(request);
         var result = await Mediator.Send(mediatrRequest, cancellationToken).ConfigureAwait(false);
 
+        
         return File(result.Result.FileStream, result.Result.ContentType, result.Result.DownloadFileName);
     }
 
