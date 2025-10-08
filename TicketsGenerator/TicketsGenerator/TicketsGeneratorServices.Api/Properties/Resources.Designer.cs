@@ -69,5 +69,27 @@ namespace TicketsGeneratorServices.Api.Properties {
                 return ((byte[])(obj));
             }
         }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на &lt;!DOCTYPE html&gt;
+        ///&lt;!-- Created by pdf2htmlEX (https://github.com/pdf2htmlEX/pdf2htmlEX) --&gt;
+        ///&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+        ///&lt;head&gt;
+        ///    &lt;meta charset=&quot;utf-8&quot; /&gt;
+        ///    &lt;meta name=&quot;generator&quot; content=&quot;pdf2htmlEX&quot; /&gt;
+        ///    &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge,chrome=1&quot; /&gt;
+        ///    &lt;style type=&quot;text/css&quot;&gt;
+        ///        /*! 
+        /// * Base CSS for pdf2htmlEX
+        /// * Copyright 2012,2013 Lu Wang &lt;coolwanglu@gmail.com&gt; 
+        /// * https://github.com/pdf2htmlEX/pdf2htmlEX/blob/master/share/LICENSE
+        /// */ #sidebar {
+        ///      [остаток строки не уместился]&quot;;.
+        /// </summary>
+        internal static string templateHtml {
+            get {
+                return ResourceManager.GetString("templateHtml", resourceCulture);
+            }
+        }
     }
 }

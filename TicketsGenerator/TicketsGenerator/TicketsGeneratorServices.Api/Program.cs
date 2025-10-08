@@ -12,7 +12,7 @@ GlobalFontSettings.FontResolver ??= new EmbeddedFontResolver();
 
 var app = builder.Build();
 
-app.Logger.LogInformation("--- ������ ������ TicketsGeneratorServices.Api ---");
+app.Logger.LogInformation("--- Starting service TicketsGeneratorServices.Api ---");
 
 app.ConfigureApplication();
 

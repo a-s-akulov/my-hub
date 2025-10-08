@@ -29,6 +29,8 @@ public static class Startup
         builder.AddPartnersApiServiceInApp(options);
         builder.AddTicketsGeneratorStorageDbServiceInApp(options);
 
+        System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
 
 
         return builder;
