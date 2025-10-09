@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
 using PdfSharp.Drawing;
+using PdfSharp.Pdf;
+using PdfSharp.Pdf.Advanced;
 using PdfSharp.Pdf.IO;
 using System.Diagnostics;
-using PdfSharp.Pdf;
 using TicketsGeneratorServices.Api.DTO.V1.TicketsGenerator;
 using TicketsGeneratorServices.Api.RequestHandlers.Base;
 using TicketsGeneratorServices.Common.Services.TicketsGeneratorStorageService;
@@ -69,6 +70,18 @@ public class GetTicketsV1RequestHandler : RequestHandlerBase<ITicketsGeneratorSt
         var document = PdfReader.Open(templateStream);
         var page = document.Pages[0];
 
+        // Dev
+        var orderId = "5e91f675-09ed-46";
+        var ticketId = 81845955;
+        //Prod
+        //var orderId = Guid.NewGuid().ToString("D")[..16];
+        //var ticketId = Random.Shared.Next(12345678, 98765432);
+
+
+
+        SetOrderId(page, orderId);
+        SetTicketId(page, ticketId);
+        SetTicketIdQr(page, ticketId);
         SetVisitDate(page, visitDate);
         SetSaleDate(page, saleDate);
         
@@ -77,6 +90,44 @@ public class GetTicketsV1RequestHandler : RequestHandlerBase<ITicketsGeneratorSt
         stream.Seek(0, SeekOrigin.Begin);
 
         return stream;
+    }
+
+
+    private static void SetOrderId(PdfPage pdfPage, string orderId)
+    {
+        using var gfx = XGraphics.FromPdfPage(pdfPage);
+
+        var font = new XFont("Arial", 6, XFontStyle.Bold);
+        var areaRect = new XRect(110.4, pdfPage.Height - 29.3, 160, 10);
+
+        gfx.DrawRectangle(XBrushes.White, areaRect);
+        gfx.DrawString(orderId, font, XBrushes.Red, areaRect, XStringFormats.CenterLeft);
+    }
+
+
+    private static void SetTicketId(PdfPage pdfPage, int ticketId)
+    {
+        using var gfx = XGraphics.FromPdfPage(pdfPage);
+
+        var font = new XFont("Arial", 9);
+        var areaRect = new XRect(-129.5, 325.8, 80, 10);
+
+        gfx.RotateTransform(-90);
+        gfx.DrawRectangle(XBrushes.White, areaRect);
+        gfx.DrawString(ticketId.ToString(), font, XBrushes.Red, areaRect, XStringFormats.Center);
+    }
+
+
+    private static void SetTicketIdQr(PdfPage pdfPage, int ticketId)
+    {
+        using var gfx = XGraphics.FromPdfPage(pdfPage);
+
+        var font = new XFont("Arial", 9);
+        var areaRect = new XRect(-129.5, 325.8, 80, 10);
+
+        gfx.RotateTransform(-90);
+        gfx.DrawRectangle(XBrushes.White, areaRect);
+        gfx.DrawString(ticketId.ToString(), font, XBrushes.Red, areaRect, XStringFormats.Center);
     }
 
 
