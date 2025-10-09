@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
-using PdfSharp.Pdf.Advanced;
 using PdfSharp.Pdf.IO;
+using QRCoder;
 using System.Diagnostics;
+using Svg;
 using TicketsGeneratorServices.Api.DTO.V1.TicketsGenerator;
 using TicketsGeneratorServices.Api.RequestHandlers.Base;
 using TicketsGeneratorServices.Common.Services.TicketsGeneratorStorageService;
@@ -97,7 +98,7 @@ public class GetTicketsV1RequestHandler : RequestHandlerBase<ITicketsGeneratorSt
     {
         using var gfx = XGraphics.FromPdfPage(pdfPage);
 
-        var font = new XFont("Arial", 6, XFontStyle.Bold);
+        var font = new XFont("Arial", 6, XFontStyleEx.Bold);
         var areaRect = new XRect(110.4, pdfPage.Height - 29.3, 160, 10);
 
         gfx.DrawRectangle(XBrushes.White, areaRect);
@@ -122,12 +123,21 @@ public class GetTicketsV1RequestHandler : RequestHandlerBase<ITicketsGeneratorSt
     {
         using var gfx = XGraphics.FromPdfPage(pdfPage);
 
-        var font = new XFont("Arial", 9);
-        var areaRect = new XRect(-129.5, 325.8, 80, 10);
+        var qrCodeSvg = SvgQRCodeHelper.GetQRCode(ticketId.ToString(), 32, "#000000", "#ffffff", eccLevel: QRCodeGenerator.ECCLevel.Q, drawQuietZones: false);
+        var svgDocument = SvgDocument.FromSvg<SvgDocument>(qrCodeSvg);
 
-        gfx.RotateTransform(-90);
+        using var svgImage = svgDocument.Draw();
+        using var qrCodeStream = new MemoryStream();
+        svgImage.Save(qrCodeStream, System.Drawing.Imaging.ImageFormat.Png);
+        qrCodeStream.Seek(0, SeekOrigin.Begin);
+
+        using var image = XImage.FromStream(qrCodeStream);
+        image.Interpolate = false;
+        
+        var areaRect = new XRect(242, pdfPage.Height - 147, 32, 32);
+
         gfx.DrawRectangle(XBrushes.White, areaRect);
-        gfx.DrawString(ticketId.ToString(), font, XBrushes.Red, areaRect, XStringFormats.Center);
+        gfx.DrawImage(image, areaRect);
     }
 
 
