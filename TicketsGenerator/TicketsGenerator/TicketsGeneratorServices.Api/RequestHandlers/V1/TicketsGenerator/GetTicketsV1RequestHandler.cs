@@ -37,17 +37,17 @@ public class GetTicketsV1RequestHandler : RequestHandlerBase<ITicketsGeneratorSt
             //        visitDate
             //    );
             // Test template
-            fileStream = GenerateDocument(
-                request.PersonsCount <= 0 ? 1 : request.PersonsCount,
-                new DateOnly(2025, 08, 16),
-                new DateTimeOffset(2025, 08, 16, 12, 36, 00, TimeSpan.FromHours(3))
-            );
-            // Test not template
             //fileStream = GenerateDocument(
             //    request.PersonsCount <= 0 ? 1 : request.PersonsCount,
-            //    new DateOnly(2025, 10, 25),
-            //    new DateTimeOffset(2025, 10, 25, 07, 11, 00, TimeSpan.FromHours(3))
+            //    new DateOnly(2025, 08, 16),
+            //    new DateTimeOffset(2025, 08, 16, 12, 36, 00, TimeSpan.FromHours(3))
             //);
+            // Test not template
+            fileStream = GenerateDocument(
+                request.PersonsCount <= 0 ? 1 : request.PersonsCount,
+                new DateOnly(2025, 10, 25),
+                new DateTimeOffset(2025, 10, 25, 07, 11, 00, TimeSpan.FromHours(3))
+            );
         }
         catch (Exception ex)
         {
@@ -84,11 +84,11 @@ public class GetTicketsV1RequestHandler : RequestHandlerBase<ITicketsGeneratorSt
     {
         using var gfx = XGraphics.FromPdfPage(pdfPage);
 
-        var font = new XFont("Arial", 10);
-        var areaRect = new XRect(107, pdfPage.Height - 48.2, 160, 15);
+        var font = new XFont("Arial", 6);
+        var areaRect = new XRect(138.2, pdfPage.Height - 99.1, 50, 10);
 
         gfx.DrawRectangle(XBrushes.White, areaRect);
-        gfx.DrawString(saleDate.ToString("f"), font, XBrushes.Red, areaRect, XStringFormats.CenterLeft);
+        gfx.DrawString(visitDate.ToString("dd.MM.yyyy"), font, XBrushes.Red, areaRect, XStringFormats.CenterLeft);
     }
 
 
