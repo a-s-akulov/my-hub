@@ -5,6 +5,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS base
 USER app
 WORKDIR /app
 EXPOSE 8080
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 
 
 # Этот этап используется для сборки проекта службы
