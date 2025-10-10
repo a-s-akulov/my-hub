@@ -16,6 +16,12 @@ namespace TicketsGeneratorServices.Api.RequestHandlers.V1.MyAwesomeProducts;
 
 public class GetTicketsV1RequestHandler : RequestHandlerBase<ITicketsGeneratorStorageService, GetTicketsRequest, GetTicketsResponse>
 {
+    #region Поля
+
+    private static readonly System.Globalization.CultureInfo CULTURE_RU = System.Globalization.CultureInfo.GetCultureInfo("ru-RU");
+
+    #endregion Поля
+
     #region Конструкторы
 
     public GetTicketsV1RequestHandler(ITicketsGeneratorStorageService storageService, ILogger<GetTicketsV1RequestHandler> logger, IMapper mapper, ActivitySource activitySource)
@@ -220,7 +226,7 @@ public class GetTicketsV1RequestHandler : RequestHandlerBase<ITicketsGeneratorSt
         var areaRect = new XRect(107, pdfPage.Height - 48.2, 160, 15);
 
         gfx.DrawRectangle(XBrushes.White, areaRect);
-        gfx.DrawString(saleDate.ToString("f"), font, XBrushes.Black, areaRect, XStringFormats.CenterLeft);
+        gfx.DrawString(saleDate.ToString("f", CULTURE_RU), font, XBrushes.Black, areaRect, XStringFormats.CenterLeft);
     }
 
     #endregion Методы
