@@ -1,7 +1,18 @@
 ﻿@page "/"
+@rendermode InteractiveServer
+@inject NavigationManager Nav
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<p>Перенаправление на страницу генерации билетов...</p>
 
-Welcome to your new app.
+@code {
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Task.Delay(2 * 1000).Wait();
+            Nav.NavigateTo("tickets-generator", true);
+        }
+    }
+}
