@@ -2,11 +2,11 @@
 
 # Этот этап используется при запуске из VS в быстром режиме (по умолчанию для конфигурации отладки)
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS base
-USER app
 WORKDIR /app
 EXPOSE 8080
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 RUN apk add --no-cache icu-libs # or icu-data-full for full data
+USER app
 
 
 # Этот этап используется для сборки проекта службы
