@@ -5,7 +5,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS base
 WORKDIR /app
 EXPOSE 8080
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
-RUN apk add --no-cache icu-data-full # or icu-data-full for full data
+RUN apk add --no-cache icu-libs icu-data-full # or icu-data-full for full data
 USER app
 
 
