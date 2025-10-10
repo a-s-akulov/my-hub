@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
+using PdfSharp.Pdf.Advanced;
 using PdfSharp.Pdf.IO;
 using QRCoder;
 using SkiaSharp;
 using Svg;
 using System.Diagnostics;
+using System.Reflection.Metadata;
 using TicketsGeneratorServices.Api.DTO.V1.TicketsGenerator;
 using TicketsGeneratorServices.Api.RequestHandlers.Base;
 using TicketsGeneratorServices.Common.Services.TicketsGeneratorStorageService;
@@ -79,6 +81,7 @@ public class GetTicketsV1RequestHandler : RequestHandlerBase<ITicketsGeneratorSt
         });
     }
 
+
     private Stream GenerateDocument(int personsCount, DateOnly visitDate, DateTimeOffset saleDate)
     {
         // Dev
@@ -89,14 +92,13 @@ public class GetTicketsV1RequestHandler : RequestHandlerBase<ITicketsGeneratorSt
 
         // PdfSharp pdf
         using var templateStream = new MemoryStream(Properties.Resources.template);
-        using var document = PdfReader.Open(templateStream);
-        var firstPage = document.Pages[0];
+        using var templateDocument = PdfReader.Open(templateStream, PdfDocumentOpenMode.Import);
+        var templatePage = templateDocument.Pages[0];
 
-        while (document.Pages.Count > 1)
-            document.Pages.Remove(document.Pages[1]);
 
+        using var document = new PdfDocument();
         for (var personId = 0; personId < personsCount; personId++)
-            document.Pages.Add(firstPage);
+            document.Pages.Add(templatePage);
 
         foreach (var page in document.Pages)
             DrawPage(page, orderId, visitDate, saleDate);
