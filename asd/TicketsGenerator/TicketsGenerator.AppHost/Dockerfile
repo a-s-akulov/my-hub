@@ -12,22 +12,24 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 #RUN ls -a /src
+COPY ["asd/TicketsGenerator/TicketsGenerator.AppHost/TicketsGenerator.AppHost.csproj", "asd/TicketsGenerator/TicketsGenerator.AppHost/"]
+COPY ["asd/TicketsGenerator/TicketsGenerator.Web/TicketsGenerator.Web.csproj", "asd/TicketsGenerator/TicketsGenerator.Web/"]
 COPY ["TicketsGenerator/TicketsGenerator/TicketsGeneratorServices.Api/TicketsGeneratorServices.Api.csproj", "TicketsGenerator/TicketsGenerator/TicketsGeneratorServices.Api/"]
 COPY ["TicketsGenerator/TicketsGenerator/TicketsGeneratorServices.Common/TicketsGeneratorServices.Common.csproj", "TicketsGenerator/TicketsGenerator/TicketsGeneratorServices.Common/"]
 COPY ["asd/TicketsGenerator/TicketsGenerator.ServiceDefaults/TicketsGenerator.ServiceDefaults.csproj", "asd/TicketsGenerator/TicketsGenerator.ServiceDefaults/"]
 COPY ["TicketsGenerator/TicketsGenerator/TicketsGeneratorServices.Db/TicketsGeneratorServices.Db.csproj", "TicketsGenerator/TicketsGenerator/TicketsGeneratorServices.Db/"]
-RUN dotnet restore "./TicketsGenerator/TicketsGenerator/TicketsGeneratorServices.Api/TicketsGeneratorServices.Api.csproj"
+RUN dotnet restore "./asd/TicketsGenerator/TicketsGenerator.AppHost/TicketsGenerator.AppHost.csproj"
 COPY . .
-WORKDIR "/src/TicketsGenerator/TicketsGenerator/TicketsGeneratorServices.Api"
-RUN dotnet build "./TicketsGeneratorServices.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/asd/TicketsGenerator/TicketsGenerator.AppHost"
+RUN dotnet build "./TicketsGenerator.AppHost.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # Этот этап используется для публикации проекта службы, который будет скопирован на последний этап
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./TicketsGeneratorServices.Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+#FROM build AS publish
+#ARG BUILD_CONFIGURATION=Release
+#RUN dotnet publish "./TicketsGenerator.AppHost.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # Этот этап используется в рабочей среде или при запуске из VS в обычном режиме (по умолчанию, когда конфигурация отладки не используется)
 FROM base AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "TicketsGeneratorServices.Api.dll"]
+COPY --from=build /app/build .
+ENTRYPOINT ["dotnet", "TicketsGenerator.AppHost.dll"]

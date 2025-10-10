@@ -26,7 +26,6 @@ public static class Startup
         builder.AddMediatRInApp();                                              // MediatR
         builder.AddMetricsInApp();                                              // Metrics
 
-        builder.AddPartnersApiServiceInApp(options);
         builder.AddTicketsGeneratorStorageDbServiceInApp(options);
 
         System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);

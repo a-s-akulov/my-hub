@@ -1,0 +1,27 @@
+# Exported from Render on 2025-10-10T17:22:35Z
+version: "1"
+services:
+- type: web
+  name: my-hub:api
+  runtime: image
+  image:
+    url: docker.io/andreyakulov/my-hub:api
+  plan: free
+  region: frankfurt
+  autoDeployTrigger: commit
+- type: web
+  name: my-hub:web
+  runtime: image
+  image:
+    url: docker.io/andreyakulov/my-hub:web
+  plan: free
+  region: frankfurt
+  autoDeployTrigger: commit
+- type: web
+  name: my-hub:aspire
+  runtime: image
+  image:
+    url: docker.io/andreyakulov/my-hub:aspire
+  plan: free
+  region: frankfurt
+  autoDeployTrigger: commit

@@ -9,11 +9,6 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<OpenApiReference Include="Services\PartnersService\Repository\partnersApi.json" CodeGenerator="NSwagCSharp" Namespace="TicketsGeneratorServices.Common.Services.PartnersService.Repository" ClassName="PartnersApiClient">
-			<SourceUri>https://k8s.bookcentre.ru/partners/swagger/v3/swagger.json</SourceUri>
-			<Options>/UseBaseUrl:false /GenerateBaseUrlProperty:false /GenerateOptionalParameters:true /GenerateNullableReferenceTypes:true /ExceptionClass:"TicketsGeneratorServices.Common.Models.OpenAPI.ApiException" /GenerateExceptionClasses:false /OperationGenerationMode:"SingleClientFromPathSegments" /DateType:"System.DateOnly" /TimeType:"System.TimeOnly"</Options>
-			<OutputPath>PartnersApiClient.cs</OutputPath>
-		</OpenApiReference>
 	</ItemGroup>
 
 	
