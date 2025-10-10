@@ -13,12 +13,14 @@
 
 @code {
     private int personsCount = 1;
+    private DateOnly? visitDate = null;
+    private DateTimeOffset? saleDate = null;
 
 
     private async Task DownloadTickets()
     {
-        var fileResponse = await TicketsGeneratorApi.GetTickets(personsCount);
-        var fileStream = fileResponse.ReadAsStream();
+        using var fileResponse = await TicketsGeneratorApi.GetTickets(personsCount, visitDate, saleDate);
+        await using var fileStream = await fileResponse.ReadAsStreamAsync();
         var fileContentType = fileResponse.Headers.ContentType.ToString();
         var fileName = fileResponse.Headers.ContentDisposition.FileNameStar;
 
