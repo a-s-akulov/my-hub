@@ -226,7 +226,7 @@ public class GetTicketsV1RequestHandler : RequestHandlerBase<ITicketsGeneratorSt
         var areaRect = new XRect(107, pdfPage.Height - 48.2, 160, 15);
 
         gfx.DrawRectangle(XBrushes.White, areaRect);
-        gfx.DrawString(saleDate.ToString("f", CULTURE_RU), font, XBrushes.Black, areaRect, XStringFormats.CenterLeft);
+        gfx.DrawString(saleDate.ToString("dd MMMM yyyy г. HH:mm", CULTURE_RU), font, XBrushes.Black, areaRect, XStringFormats.CenterLeft);
     }
 
     #endregion Методы

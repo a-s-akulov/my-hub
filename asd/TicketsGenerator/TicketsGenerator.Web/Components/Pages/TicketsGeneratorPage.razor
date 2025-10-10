@@ -126,14 +126,65 @@
 
 <script>
   window.downloadFileFromStream = async (fileName, contentStreamReference) => {
-    const arrayBuffer = await contentStreamReference.arrayBuffer();
-    const blob = new Blob([arrayBuffer]);
-    const url = URL.createObjectURL(blob);
-    const anchorElement = document.createElement('a');
-    anchorElement.href = url;
-    anchorElement.download = fileName ?? '';
-    anchorElement.click();
-    anchorElement.remove();
-    URL.revokeObjectURL(url);
+    try {
+      const arrayBuffer = await contentStreamReference.arrayBuffer();
+      const blob = new Blob([arrayBuffer], { type: 'application/pdf' });
+      
+      // Попытка 1: URL.createObjectURL с созданием элемента
+      if (typeof URL !== 'undefined' && URL.createObjectURL) {
+        try {
+          const url = URL.createObjectURL(blob);
+          const anchorElement = document.createElement('a');
+          anchorElement.href = url;
+          anchorElement.download = fileName ?? 'билеты.pdf';
+          anchorElement.style.display = 'none';
+          document.body.appendChild(anchorElement);
+          anchorElement.click();
+          document.body.removeChild(anchorElement);
+          URL.revokeObjectURL(url);
+          return;
+        } catch (e) {
+          console.warn('Method 1 failed:', e);
+        }
+      }
+      
+      // Попытка 2: Прямое открытие blob в новой вкладке
+      if (typeof URL !== 'undefined' && URL.createObjectURL && window.open) {
+        try {
+          const url = URL.createObjectURL(blob);
+          window.open(url, '_blank');
+          // Не revoke URL сразу, чтобы дать время открыться
+          setTimeout(() => URL.revokeObjectURL(url), 1000);
+          return;
+        } catch (e) {
+          console.warn('Method 2 failed:', e);
+        }
+      }
+      
+      // Попытка 3: Создание ссылки без download атрибута
+      if (typeof URL !== 'undefined' && URL.createObjectURL) {
+        try {
+          const url = URL.createObjectURL(blob);
+          const anchorElement = document.createElement('a');
+          anchorElement.href = url;
+          anchorElement.target = '_blank';
+          anchorElement.style.display = 'none';
+          document.body.appendChild(anchorElement);
+          anchorElement.click();
+          document.body.removeChild(anchorElement);
+          setTimeout(() => URL.revokeObjectURL(url), 1000);
+          return;
+        } catch (e) {
+          console.warn('Method 3 failed:', e);
+        }
+      }
+      
+      // Fallback: показать сообщение
+      alert('Скачивание недоступно в этом браузере. Попробуйте открыть в обычном браузере или скопируйте ссылку.');
+      
+    } catch (error) {
+      console.error('Download error:', error);
+      alert('Ошибка скачивания файла: ' + error.message);
+    }
   }
 </script>
