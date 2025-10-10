@@ -1,13 +1,11 @@
 ﻿using AutoMapper;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
-using PdfSharp.Pdf.Advanced;
 using PdfSharp.Pdf.IO;
 using QRCoder;
 using SkiaSharp;
-using Svg;
 using System.Diagnostics;
-using System.Reflection.Metadata;
+using Svg.Skia;
 using TicketsGeneratorServices.Api.DTO.V1.TicketsGenerator;
 using TicketsGeneratorServices.Api.RequestHandlers.Base;
 using TicketsGeneratorServices.Common.Services.TicketsGeneratorStorageService;
@@ -70,7 +68,8 @@ public class GetTicketsV1RequestHandler : RequestHandlerBase<ITicketsGeneratorSt
         }
         catch (Exception ex)
         {
-            throw ex;
+            Log.LogError(ex, "Failed to generate tickets");
+            throw;
         }
 
         return Task.FromResult(new GetTicketsResponse
@@ -158,11 +157,10 @@ public class GetTicketsV1RequestHandler : RequestHandlerBase<ITicketsGeneratorSt
         using var gfx = XGraphics.FromPdfPage(pdfPage);
 
         var qrCodeSvg = SvgQRCodeHelper.GetQRCode(ticketId.ToString(), 32, "#000000", "#ffffff", eccLevel: QRCodeGenerator.ECCLevel.Q, drawQuietZones: false);
-        var svgDocument = SvgDocument.FromSvg<SvgDocument>(qrCodeSvg);
+        using var svgImage = SKSvg.CreateFromSvg(qrCodeSvg);
 
-        using var svgImage = svgDocument.Draw();
         using var qrCodeStream = new MemoryStream();
-        svgImage.Save(qrCodeStream, System.Drawing.Imaging.ImageFormat.Png);
+        svgImage.Save(qrCodeStream, SKColors.White);
         qrCodeStream.Seek(0, SeekOrigin.Begin);
 
         using var image = XImage.FromStream(qrCodeStream);
