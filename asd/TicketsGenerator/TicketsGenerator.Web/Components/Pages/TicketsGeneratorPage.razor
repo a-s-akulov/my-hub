@@ -9,20 +9,92 @@
 <h1>Генератор билетов</h1>
 
 <p role="status">Количество человек: <input type="number" name="personsCount" min="1" max="100" step="1" @bind-value="personsCount" @bind-value:event="oninput" /></p>
+<p role="status">Дата визита (необязательно): <InputDate @bind-Value="VisitDate" TValue="DateOnly?" /></p>
+<p role="status">Дата продажи (необязательно): <InputText @bind-Value="SaleDateString" type="datetime-local" /></p>
 <button class="btn btn-primary" @onclick="DownloadTickets">Скачать билеты</button>
 
 @code {
     private int personsCount = 1;
-    private DateOnly? visitDate = null;
-    private DateTimeOffset? saleDate = null;
+    private DateOnly _visitDate = CreateDefaultVisitDate();
+    private DateTimeOffset _saleDate = CreateDefaultSaleDate();
+
+    private static DateOnly MAX_VALID_VISIT_DATE = DateOnly.FromDateTime(DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(3)).AddMonths(2).Date);
+    private static DateTimeOffset MIN_VALID_SALE_DATE = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(3)).AddMonths(-2);
+
+    private DateOnly? VisitDate
+    {
+        get => _visitDate;
+        set
+        {
+            if (value == null)
+            {
+                CreateDefaultVisitDate();
+                return;
+            }
+
+            if (value.Value < GetTodayDate() || value.Value < DateOnly.FromDateTime(_saleDate.Date) || value.Value > MAX_VALID_VISIT_DATE)
+                return;
+
+
+            _visitDate = value.Value;
+        }
+    }
+
+    private string? SaleDateString
+    {
+        get => _saleDate.ToString("yyyy-MM-ddTHH:mm");
+        set
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                _saleDate = CreateDefaultSaleDate();
+                return;
+            }
+
+            // Значение из input type="datetime-local" — локальное без смещения.
+            if (!DateTimeOffset.TryParse(value, null, System.Globalization.DateTimeStyles.AdjustToUniversal, out var utcDt))
+                return;
+
+            var localDt = utcDt.ToOffset(TimeSpan.FromHours(3));
+
+            if (DateOnly.FromDateTime(localDt.Date) > _visitDate || localDt < MIN_VALID_SALE_DATE)
+                return;
+
+            _saleDate = localDt;
+        }
+    }
+
+
+    private static DateOnly GetTodayDate() => DateOnly.FromDateTime(DateTime.UtcNow.AddHours(3).Date);
+    private static DateTimeOffset GetNowDateTimeOffset() => DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(3));
+
+
+    private static DateOnly CreateDefaultVisitDate() => GetTodayDate();
+
+
+    private static DateTimeOffset CreateDefaultSaleDate()
+    {
+        var yesterday = GetNowDateTimeOffset().AddDays(-1);
+        var saleDate = new DateTimeOffset(
+            yesterday.Year,
+            yesterday.Month,
+            yesterday.Day,
+            Random.Shared.Next(11, 22),
+            Random.Shared.Next(1, 59),
+            Random.Shared.Next(1, 59),
+            TimeSpan.FromHours(3)
+        );
+
+        return saleDate;
+    }
 
 
     private async Task DownloadTickets()
     {
-        using var fileResponse = await TicketsGeneratorApi.GetTickets(personsCount, visitDate, saleDate);
+        using var fileResponse = await TicketsGeneratorApi.GetTickets(personsCount, _visitDate, _saleDate);
         await using var fileStream = await fileResponse.ReadAsStreamAsync();
-        var fileContentType = fileResponse.Headers.ContentType.ToString();
-        var fileName = fileResponse.Headers.ContentDisposition.FileNameStar;
+        var fileContentType = fileResponse.Headers?.ContentType?.ToString() ?? "application/pdf";
+        var fileName = fileResponse.Headers?.ContentDisposition?.FileNameStar ?? "билеты.pdf";
 
         using var streamRef = new DotNetStreamReference(stream: fileStream);
         await JS.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
