@@ -9,7 +9,14 @@ public class GetTicketsRequest : ApiRequest
     public int PersonsCount { get; set; }
 
     /// <summary>
-    /// Желаемая дата посещения (локальная зона, если не указана — текущая дата)
+    /// Желаемая дата посещения
+    /// <br/>Если не указана — текущая дата
     /// </summary>
-    public DateTimeOffset? VisitDate { get; set; }
+    public DateOnly? VisitDate { get; set; }
+
+    /// <summary>
+    /// Дата покупки билета
+    /// <br/>Если не указана — Вчерашний день со случайным временем от 11:00 др 22:00
+    /// </summary>
+    public DateTimeOffset? SaleDate { get; set; }
 }

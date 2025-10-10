@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using PdfSharp;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 using PdfSharp.Pdf.IO;
@@ -31,15 +30,29 @@ public class GetTicketsV1RequestHandler : RequestHandlerBase<ITicketsGeneratorSt
 
     protected override Task<GetTicketsResponse> HandleCore(GetTicketsRequest request, CancellationToken cancellationToken)
     {
-        var visitDate = request.VisitDate ?? DateTimeOffset.Now;
+        var visitDate = request.VisitDate ?? DateOnly.FromDateTime(DateTime.Today);
+        var yesterday = DateTime.Now.AddDays(-1);
+        var saleDate = request.SaleDate
+            ?? new DateTimeOffset(
+                yesterday.Year,
+                yesterday.Month,
+                yesterday.Day,
+                Random.Shared.Next(11, 22),
+                Random.Shared.Next(1, 59),
+                Random.Shared.Next(1, 59),
+                TimeSpan.FromHours(3)
+            );
+
+
         Stream fileStream;
         try
         {
             // Real request
-            //fileStream = GenerateDocument(
-            //        request.PersonsCount <= 0 ? 1 : request.PersonsCount,
-            //        visitDate
-            //    );
+            fileStream = GenerateDocument(
+                    request.PersonsCount <= 0 ? 1 : request.PersonsCount,
+                    visitDate,
+                    saleDate
+                );
             // Test template
             //fileStream = GenerateDocument(
             //    request.PersonsCount <= 0 ? 1 : request.PersonsCount,
@@ -47,11 +60,11 @@ public class GetTicketsV1RequestHandler : RequestHandlerBase<ITicketsGeneratorSt
             //    new DateTimeOffset(2025, 08, 16, 12, 36, 00, TimeSpan.FromHours(3))
             //);
             // Test not template
-            fileStream = GenerateDocument(
-                request.PersonsCount <= 0 ? 1 : request.PersonsCount,
-                new DateOnly(2025, 10, 25),
-                new DateTimeOffset(2025, 10, 25, 07, 11, 00, TimeSpan.FromHours(3))
-            );
+            //fileStream = GenerateDocument(
+            //    request.PersonsCount <= 0 ? 1 : request.PersonsCount,
+            //    new DateOnly(2025, 10, 25),
+            //    new DateTimeOffset(2025, 10, 25, 07, 11, 00, TimeSpan.FromHours(3))
+            //);
         }
         catch (Exception ex)
         {
@@ -68,19 +81,41 @@ public class GetTicketsV1RequestHandler : RequestHandlerBase<ITicketsGeneratorSt
 
     private Stream GenerateDocument(int personsCount, DateOnly visitDate, DateTimeOffset saleDate)
     {
+        // Dev
+        //var orderId = "5e91f675-09ed-46";
+        //Prod
+        var orderId = Guid.NewGuid().ToString("D")[..16];
+
+
         // PdfSharp pdf
         using var templateStream = new MemoryStream(Properties.Resources.template);
-        var document = PdfReader.Open(templateStream);
-        var page = document.Pages[0];
+        using var document = PdfReader.Open(templateStream);
+        var firstPage = document.Pages[0];
 
+        while (document.Pages.Count > 1)
+            document.Pages.Remove(document.Pages[1]);
+
+        for (var personId = 0; personId < personsCount; personId++)
+            document.Pages.Add(firstPage);
+
+        foreach (var page in document.Pages)
+            DrawPage(page, orderId, visitDate, saleDate);
+
+        
+        var stream = new MemoryStream();
+        document.Save(stream);
+        stream.Seek(0, SeekOrigin.Begin);
+
+        return stream;
+    }
+
+
+    private static void DrawPage(PdfPage page, string orderId, DateOnly visitDate, DateTimeOffset saleDate)
+    {
         // Dev
-        var orderId = "5e91f675-09ed-46";
-        var ticketId = 81845955;
-        //Prod
-        //var orderId = Guid.NewGuid().ToString("D")[..16];
-        //var ticketId = Random.Shared.Next(12345678, 98765432);
-
-
+        //var ticketId = 81845955;
+        // Prod
+        var ticketId = Random.Shared.Next(12345678, 98765432);
 
         SetOrderId(page, orderId);
         SetTicketId(page, ticketId);
@@ -88,12 +123,6 @@ public class GetTicketsV1RequestHandler : RequestHandlerBase<ITicketsGeneratorSt
         SetTicketIdBarcode(page, ticketId);
         SetVisitDate(page, visitDate);
         SetSaleDate(page, saleDate);
-        
-        var stream = new MemoryStream();
-        document.Save(stream);
-        stream.Seek(0, SeekOrigin.Begin);
-
-        return stream;
     }
 
 
