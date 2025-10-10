@@ -5,8 +5,8 @@ docker push andreyakulov/my-hub:api
 docker build -t andreyakulov/my-hub:web -f asd/TicketsGenerator/TicketsGenerator.Web\Dockerfile .
 docker push andreyakulov/my-hub:web
 
-docker build -t andreyakulov/my-hub:aspire -f asd/TicketsGenerator/TicketsGenerator.AppHost\Dockerfile .
-docker push andreyakulov/my-hub:aspire
+@REM docker build -t andreyakulov/my-hub:aspire -f asd/TicketsGenerator/TicketsGenerator.AppHost\Dockerfile .
+@REM docker push andreyakulov/my-hub:aspire
 
 
 pause;

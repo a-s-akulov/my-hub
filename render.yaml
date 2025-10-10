@@ -17,11 +17,11 @@ services:
   plan: free
   region: frankfurt
   autoDeployTrigger: commit
-- type: web
-  name: my-hub:aspire
-  runtime: image
-  image:
-    url: docker.io/andreyakulov/my-hub:aspire
-  plan: free
-  region: frankfurt
-  autoDeployTrigger: commit
+# - type: web
+#   name: my-hub:aspire
+#   runtime: image
+#   image:
+#     url: docker.io/andreyakulov/my-hub:aspire
+#   plan: free
+#   region: frankfurt
+#   autoDeployTrigger: commit

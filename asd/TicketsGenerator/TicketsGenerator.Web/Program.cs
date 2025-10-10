@@ -12,8 +12,10 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddOutputCache();
 
-builder.Services.AddHttpClient<WeatherApiClient>(client => client.BaseAddress = new("http://apiservice"));
-builder.Services.AddHttpClient<TicketsGeneratorApiClient>(client => client.BaseAddress = new("http://apiservice"));
+//builder.Services.AddHttpClient<WeatherApiClient>(client => client.BaseAddress = new("http://apiservice"));
+
+var apiUri = builder.Environment.IsDevelopment() ? "http://localhost:5525" : "https://my-hub-api.onrender.com";
+builder.Services.AddHttpClient<TicketsGeneratorApiClient>((services, client) => client.BaseAddress = new(apiUri));
 
 var app = builder.Build();
 
