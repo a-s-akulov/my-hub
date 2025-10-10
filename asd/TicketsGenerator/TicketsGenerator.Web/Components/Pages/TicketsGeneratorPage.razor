@@ -11,12 +11,23 @@
 <p role="status">Количество человек: <input type="number" name="personsCount" min="1" max="100" step="1" @bind-value="personsCount" @bind-value:event="oninput" /></p>
 <p role="status">Дата визита (необязательно): <InputDate @bind-Value="VisitDate" TValue="DateOnly?" /></p>
 <p role="status">Дата продажи (необязательно): <InputText @bind-Value="SaleDateString" type="datetime-local" /></p>
-<button class="btn btn-primary" @onclick="DownloadTickets">Скачать билеты</button>
+<button class="btn btn-primary" @onclick="DownloadTickets" disabled="@isLoading">
+    @if (isLoading)
+    {
+        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+        <span>Генерация...</span>
+    }
+    else
+    {
+        <span>Скачать билеты</span>
+    }
+</button>
 
 @code {
     private int personsCount = 1;
     private DateOnly _visitDate = CreateDefaultVisitDate();
     private DateTimeOffset _saleDate = CreateDefaultSaleDate();
+    private bool isLoading = false;
 
     private static DateOnly MAX_VALID_VISIT_DATE = DateOnly.FromDateTime(DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(3)).AddMonths(2).Date);
     private static DateTimeOffset MIN_VALID_SALE_DATE = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(3)).AddMonths(-2);
@@ -91,13 +102,23 @@
 
     private async Task DownloadTickets()
     {
-        using var fileResponse = await TicketsGeneratorApi.GetTickets(personsCount, _visitDate, _saleDate);
-        await using var fileStream = await fileResponse.ReadAsStreamAsync();
-        var fileContentType = fileResponse.Headers?.ContentType?.ToString() ?? "application/pdf";
-        var fileName = fileResponse.Headers?.ContentDisposition?.FileNameStar ?? "билеты.pdf";
+        if (isLoading) return;
+        
+        isLoading = true;
+        try
+        {
+            using var fileResponse = await TicketsGeneratorApi.GetTickets(personsCount, _visitDate, _saleDate);
+            await using var fileStream = await fileResponse.ReadAsStreamAsync();
+            var fileContentType = fileResponse.Headers?.ContentType?.ToString() ?? "application/pdf";
+            var fileName = fileResponse.Headers?.ContentDisposition?.FileNameStar ?? "билеты.pdf";
 
-        using var streamRef = new DotNetStreamReference(stream: fileStream);
-        await JS.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
+            using var streamRef = new DotNetStreamReference(stream: fileStream);
+            await JS.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
+        }
+        finally
+        {
+            isLoading = false;
+        }
     }
 }
 
