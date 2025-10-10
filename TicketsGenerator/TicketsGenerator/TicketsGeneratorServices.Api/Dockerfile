@@ -6,6 +6,7 @@ USER app
 WORKDIR /app
 EXPOSE 8080
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+RUN apk add --no-cache icu-libs # or icu-data-full for full data
 
 
 # Этот этап используется для сборки проекта службы
