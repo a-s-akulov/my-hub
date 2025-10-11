@@ -1,4 +1,5 @@
-﻿using TicketsGeneratorServices.Api.Configuration;
+﻿using TicketsGenerator.ServiceDefaults.Configuration;
+using TicketsGeneratorServices.Api.Configuration;
 using TicketsGeneratorServices.Api.Configuration.Middleware;
 
 
@@ -30,6 +31,10 @@ public static class Startup
 
         System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
+        // WakeUp
+        var webUri = builder.Environment.IsDevelopment() ? "http://localhost:5119" : "https://my-hub-web.onrender.com";
+        builder.Services.AddAppWakeUpWorker(webUri);
+
 
 
         return builder;
@@ -59,21 +64,9 @@ public static class Startup
         app.MapControllers();
         //app.MapHealthChecks("/healthz");
 
-        // KATTEST
-        string[] summaries = ["Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"];
-        app.MapGet("/weatherforecast", () =>
-        {
-            var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-                .ToArray();
-            return forecast;
-        })
-        .WithName("GetWeatherForecast");
+        // WakeUp
+        app.MapGet("/", static () => 200);
+
         return app;
     }
 }

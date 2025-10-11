@@ -1,5 +1,7 @@
 using TicketsGenerator.Web;
 using TicketsGenerator.Web.Components;
+using TicketsGenerator.ServiceDefaults.Configuration;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +18,9 @@ builder.Services.AddOutputCache();
 
 var apiUri = builder.Environment.IsDevelopment() ? "http://localhost:5525" : "https://my-hub-api.onrender.com";
 builder.Services.AddHttpClient<TicketsGeneratorApiClient>((services, client) => client.BaseAddress = new(apiUri));
+
+// WakeUp
+builder.Services.AddAppWakeUpWorker(apiUri);
 
 var app = builder.Build();
 
